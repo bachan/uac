@@ -1,8 +1,13 @@
 SET (FLAGS_DEFAULT  "-fPIC -pipe")
 SET (FLAGS_WARNING  "-Wall -Werror -Wno-long-long -Wno-variadic-macros -Wno-strict-aliasing")# -Wextra -pedantic")
 SET (FLAGS_CXX_LANG "-Wno-deprecated")
-SET (FLAGS_RELEASE  "-O3 -fomit-frame-pointer -funroll-loops -DNDEBUG")
+SET (FLAGS_RELEASE  "-O3 -DNDEBUG") # -fomit-frame-pointer -funroll-loops
 SET (FLAGS_DEBUG    "-ggdb")
+
+# This is needed because debian package builder sets -DCMAKE_BUILD_TYPE=None
+IF (CMAKE_BUILD_TYPE STREQUAL None)
+  SET (CMAKE_BUILD_TYPE Release)
+ENDIF ()
 
 SET (CMAKE_C_FLAGS_DEBUG     "${FLAGS_DEFAULT} ${FLAGS_WARNING} ${FLAGS_DEBUG}")
 SET (CMAKE_C_FLAGS_RELEASE   "${FLAGS_DEFAULT} ${FLAGS_WARNING} ${FLAGS_DEBUG} ${FLAGS_RELEASE}")
@@ -19,6 +24,9 @@ ENDIF (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 
 # Enable printf format macros from <inttypes.h> in C++ code.
 ADD_DEFINITIONS (-D__STDC_FORMAT_MACROS)
+
+# Enable type limit macros from <stdint.h> in C++ code.
+ADD_DEFINITIONS (-D__STDC_LIMIT_MACROS)
 
 # Enable 64-bit off_t type to work with big files.
 ADD_DEFINITIONS (-D_FILE_OFFSET_BITS=64)
@@ -89,11 +97,6 @@ ENDMACRO (USE_LIBRARY)
 MACRO (USE_PACKAGE lib inc)
   USE_LIBRARY (${lib} ${ARGN})
   USE_INCLUDE (${inc} ${ARGN})
-# IF (${ARGN})
-#   USE_INCLUDE (INC_${lib} ${ARGN})
-# ELSE ()
-#   USE_INCLUDE (INC_${lib} ${lib}.h)
-# ENDIF ()
 ENDMACRO (USE_PACKAGE)
 
 MACRO (USE_PACKAGE_STATIC lib inc)
@@ -137,7 +140,7 @@ MACRO (MAKE_LIBRARY apath atype)
     TARGET_LINK_LIBRARIES (${${apath}_NAME} ${ARGN})
   ENDIF (${ARGC} GREATER 2)
   # TODO SET_TARGET_PROPERTIES (...)
-  INSTALL (TARGETS ${${apath}_NAME} DESTINATION ${LIBDIR})
+  INSTALL (TARGETS ${${apath}_NAME} DESTINATION lib)
   INSTALL (DIRECTORY ${apath} DESTINATION include FILES_MATCHING PATTERN "*.h")
   INSTALL (DIRECTORY ${apath} DESTINATION include FILES_MATCHING PATTERN "*.hpp")
   INSTALL (DIRECTORY ${apath} DESTINATION include FILES_MATCHING PATTERN "*.tcc")
