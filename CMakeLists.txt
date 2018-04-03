@@ -17,8 +17,8 @@ ADD_EXECUTABLE (uac_detect uac/uac_detect.cpp)
 TARGET_LINK_LIBRARIES (uac_detect uac ${LIB_coda} ${LIB_MAFSA} ${LIB_expat})
 
 INSTALL (FILES uac/uac.h DESTINATION include/uac)
-INSTALL (TARGETS uac DESTINATION ${LIBDIR})
-INSTALL (TARGETS uacbase DESTINATION ${LIBDIR})
+INSTALL (TARGETS uac DESTINATION lib)
+INSTALL (TARGETS uacbase DESTINATION lib)
 INSTALL (FILES uac/uac.xml ${CMAKE_CURRENT_BINARY_DIR}/uac.automaton DESTINATION share/uac)
 INSTALL (TARGETS uac_detect uac_compiler DESTINATION bin)
 
